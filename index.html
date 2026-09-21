@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="doc-title-display">নামহীন খতিয়ান রিপোর্ট - গুগল ডক্স</title>
     
-    <!-- বাংলা ফন্ট সমূহ সরাসরি গুগলের সার্ভার থেকে লোড -->
+    <!-- বাংলা ফন্ট লোড -->
     <link href="https://googleapis.com" rel="stylesheet">
     
     <style>
@@ -25,7 +25,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* গুগল ডক্স স্টাইল প্রফেশনাল হেডার */
+        /* গুগল ডক্স স্টাইল হেডার */
         .docs-header {
             background: #ffffff;
             border-bottom: 1px solid #dadce0;
@@ -56,7 +56,6 @@
 
         .filename-input:focus { border: 1px solid #1a73e8; outline: none; background: #fff; }
 
-        /* স্ক্রোলযোগ্য রেসপন্সিভ মেনুবার (মোবাইলের জন্য ফিক্সড) */
         .menubar {
             display: flex;
             gap: 15px;
@@ -101,7 +100,7 @@
             border-bottom: 1px solid #f1f3f4;
         }
 
-        /* কুইক ফরম্যাটিং টুলবার */
+        /* কুইক টুলবার */
         .custom-toolbar {
             display: flex;
             gap: 6px;
@@ -114,7 +113,7 @@
             align-items: center;
         }
 
-        .custom-toolbar select, .custom-toolbar button {
+        .custom-toolbar select, .custom-toolbar button, .custom-toolbar input {
             padding: 6px 10px;
             border: 1px solid #b0bec5;
             background: #ffffff;
@@ -124,7 +123,13 @@
             font-weight: bold;
         }
 
-        /* ওয়ার্কস্পেস ও এডিটর পাতা */
+        /* ফন্ট সাইজ ইনপুট বক্স */
+        .size-input {
+            width: 45px;
+            text-align: center;
+            cursor: text !important;
+        }
+
         .workspace {
             margin-top: 170px;
             padding: 10px;
@@ -134,7 +139,6 @@
             box-sizing: border-box;
         }
 
-        /* ডাইনামিক পেপার লেআউট (বড়-ছোট হওয়া এবং ভেঙে যাওয়া বন্ধ করবে) */
         .page-container {
             background: #ffffff;
             box-shadow: 0 1px 4px rgba(0,0,0,0.1);
@@ -144,13 +148,12 @@
             box-sizing: border-box;
             outline: none;
             overflow-wrap: break-word;
-            font-size: 18px;
+            font-size: 16px;
             line-height: var(--line-spacing);
             letter-spacing: var(--letter-spacing);
             transition: all 0.2s ease;
         }
 
-        /* সরকারি খতিয়ান টেবিল ফরম্যাট */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -160,9 +163,9 @@
 
         th, td {
             border: 1px solid #000000;
-            padding: 6px 2px;
+            padding: 8px 4px;
             text-align: center;
-            font-size: 11px;
+            font-size: 13px;
             min-height: 35px;
             word-wrap: break-word;
             color: #000;
@@ -179,7 +182,6 @@
 </head>
 <body>
 
-    <!-- হেডার ও মেনুবার -->
     <div class="docs-header">
         <div class="title-section">
             <span style="color: #2684fc; font-size: 20px;">📄</span>
@@ -187,32 +189,26 @@
         </div>
         
         <div class="menubar">
-            <!-- File Menu -->
             <div class="menu-item" tabindex="0">File (ফাইল)
                 <div class="dropdown-content">
                     <a onmousedown="event.preventDefault(); window.print();">📥 PDF / প্রিন্ট করুন</a>
                     <a onmousedown="event.preventDefault(); exportDocx();">📝 Word (.doc) ডাউনলোড</a>
                 </div>
             </div>
-            <!-- Insert Menu -->
             <div class="menu-item" tabindex="0">Insert (ইনসার্ট)
                 <div class="dropdown-content">
-                    <a onmousedown="event.preventDefault(); addKhatianTable();">📋 ১১ কলামের খতিয়ান টেবিল যোগ</a>
+                    <a onmousedown="event.preventDefault(); addCustomTable();">📋 নতুন কাস্টম টেবিল যোগ করুন</a>
                     <a onmousedown="event.preventDefault(); modifyTable('insertRow');">➕ নিচে নতুন রো যোগ করুন</a>
                     <a onmousedown="event.preventDefault(); modifyTable('deleteRow');">❌ শেষ রো বাদ দিন</a>
                 </div>
             </div>
-            <!-- Format Menu -->
             <div class="menu-item" tabindex="0">Format (ফরমেট)
                 <div class="dropdown-content">
-                    <a onmousedown="event.preventDefault(); setLineSpacing('1.0');">📏 লাইন চাপানো (Tight - 1.0)</a>
-                    <a onmousedown="event.preventDefault(); setLineSpacing('1.5');">📏 স্বাভাবিক ফাঁকা (1.5)</a>
-                    <a onmousedown="event.preventDefault(); setLineSpacing('2.0');">📏 ডাবল ফাঁকা (2.0)</a>
-                    <a onmousedown="event.preventDefault(); setLetterSpacing('-0.5px');">🔠 অক্ষর চাপানো (Tight Text)</a>
-                    <a onmousedown="event.preventDefault(); setLetterSpacing('0px');">🔠 অক্ষর স্বাভাবিক করা</a>
+                    <a onmousedown="event.preventDefault(); setLineSpacing(1.0);">📏 লাইন চাপানো (Tight - 1.0)</a>
+                    <a onmousedown="event.preventDefault(); setLineSpacing(1.5);">📏 স্বাভাবিক ফাঁকা (1.5)</a>
+                    <a onmousedown="event.preventDefault(); setLineSpacing(2.0);">📏 ডাবল ফাঁকা (2.0)</a>
                 </div>
             </div>
-            <!-- Tools Menu -->
             <div class="menu-item" tabindex="0">Tools (টুলস)
                 <div class="dropdown-content">
                     <a onmousedown="event.preventDefault(); changePageSize('A4');">📄 পেজ সাইজ: A4</a>
@@ -227,19 +223,18 @@
 
         <!-- কুইক টুলবার -->
         <div class="custom-toolbar">
-            <select id="fontSizeSelect" onchange="applyStyle('fontSize', this.value)" onmousedown="saveSelection()">
-                <option value="14px">ছোট (14px)</option>
-                <option value="18px" selected>স্বাভাবিক (18px)</option>
-                <option value="24px">বড় (24px)</option>
-                <option value="32px">হেডিং (32px)</option>
-            </select>
-            
+            <!-- ফন্ট ফ্যামিলি -->
             <select id="fontFamilySelect" onchange="applyStyle('fontFamily', this.value)" onmousedown="saveSelection()">
                 <option value="Arial, sans-serif">Arial ফন্ট</option>
                 <option value="'SolaimanLipi', sans-serif">সোলাইমানলিপি</option>
                 <option value="'Kalpurush', sans-serif">কালপুরুষ</option>
                 <option value="'Li Adorsho Lipi', sans-serif">আদর্শ লিপি</option>
             </select>
+
+            <!-- গুগল ডক্সের মতো প্লাস-মাইনাস এবং ডাইনামিক সাইজ ইনপুট বক্স -->
+            <button onmousedown="event.preventDefault(); stepFontSize(-1)">−</button>
+            <input type="number" id="fontSizeInput" class="size-input" value="16" onchange="applyStyle('fontSize', this.value + 'px')" onmousedown="saveSelection()">
+            <button onmousedown="event.preventDefault(); stepFontSize(1)">+</button>
 
             <button onmousedown="event.preventDefault(); applyStyle('fontWeight', 'bold')">B</button>
             <button onmousedown="event.preventDefault(); applyStyle('fontStyle', 'italic')">I</button>
@@ -250,8 +245,21 @@
         </div>
     </div>
 
-    <!-- মূল এডিটর পাতা -->
     <div class="workspace">
         <div id="main-editor" class="page-container" contenteditable="true" spellcheck="true" oninput="autoSave()">
             <h2 style="text-align: center;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2>
-            <h3 style="text-align: center
+            <h3 style="text-align: center;">ইউনিয়ন ভূমি অফিস</h3>
+            <p style="text-align: center;">এখানে টাচ করে চিঠিপত্র বা খতিয়ান রিপোর্ট তৈরি করুন...</p>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('main-editor');
+        const sizeInput = document.getElementById('fontSizeInput');
+        let savedRange = null;
+
+        function saveSelection() {
+            let selection = window.getSelection();
+            if (selection.rangeCount > 0) savedRange = selection.getRangeAt(0);
+        }
+
