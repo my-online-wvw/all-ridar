@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="doc-title-display">নামহীন খতিয়ান রিপোর্ট - গুগল ডক্স</title>
+    
+    <!-- গুগল সার্ভার থেকে সেরা বাংলা ও ইংরেজি ফন্ট সমূহ লোড করা হলো -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    
+    <!-- শক্তিশালী এবং মোবাইল ফ্রেন্ডলি এডিটর ইঞ্জিন (Quill CSS) -->
+    <link href="https://quilljs.com" rel="stylesheet">
+
+    <style>
+        /* ফন্ট ফ্যামিলি কাস্টমাইজেশন */
+        body {
+            font-family: 'Hind Siliguri', 'Roboto', Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* গুগল ডক্স স্টাইল হেডার */
+        .docs-header {
+            background: #ffffff;
+            border-bottom: 1px solid #dadce0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .filename-input {
+            border: 1px solid transparent;
+            font-size: 16px;
+            font-weight: bold;
+            color: #3c4043;
+            padding: 2px 5px;
+            width: 60%;
+            border-radius: 4px;
+        }
+
+        .filename-input:focus {
+            border: 1px solid #1a73e8;
+            outline: none;
+            background: #fff;
+        }
+
+        /* ড্রপডাউন মেনুবার */
+        .menubar {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: #5f6368;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 5px 0;
+            border-bottom: 1px solid #e8eaed;
+        }
+
+        .menu-item {
+            cursor: pointer;
+            position: relative;
+            padding: 2px 5px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #ffffff;
+            min-width: 160px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            z-index: 3000;
+        }
+
+        .menu-item:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #3c4043;
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        /* টুলবার মোবাইল অপ্টিমাইজেশন */
+        .ql-toolbar.ql-snow {
+            border: none !important;
+            background: #edf2fa !important;
+            border-radius: 8px;
+            margin-top: 5px;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            gap: 5px;
+        }
+
+        /* ওয়ার্কস্পেস (সাদা খাতার জায়গা) */
+        .workspace {
+            margin-top: 155px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ফিক্সড সাইজ পেপার লেআউট */
+        .page-container {
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px; /* A4 রেসপন্সিভ সাইজ */
+            min-height: 600px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+        }
+
+        .ql-container.ql-snow {
+            border: none !important;
+            font-size: 16px;
+        }
+
+        .ql-editor {
+            min-height: 600px;
+            padding: 30px !important;
+        }
+
+        /* কাস্টম ফন্ট স্টাইল এডিটর সমর্থন */
+        .ql-editor * {
+            font-family: inherit;
+        }
+
+        /* প্রিন্ট করার সময় শুধু সাদা পাতা দেখাবে */
+        @media print {
+            .docs-header { display: none; }
+            .workspace { margin-top: 0; padding: 0; }
+            .page-container { box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ১. ডক্স এর মূল হেডার এবং মেনুবার -->
+    <div class="docs-header">
+        <div class="title-section">
+            <span style="color: #2684fc; font-size: 20px;">📄</span>
+            <input type="text" id="doc-title" class="filename-input" value="নামহীন খতিয়ান রিপোর্ট" oninput="updateTitle()">
+        </div>
+        
+        <div class="menubar">
+            <div class="menu-item">File (ফাইল)
+                <div class="dropdown-content">
+                    <a onclick="window.print()">📥 PDF / প্রিন্ট করুন</a>
+                    <a onclick="exportDocx()">📝 Word (.doc) ডাউনলোড</a>
+                </div>
+            </div>
+            <div class="menu-item">Insert (ইনসার্ট)
+                <div class="dropdown-content">
+                    <a onclick="addTable()">📋 ১১ কলামের টেবিল যোগ</a>
+                    <a onclick="alert('ছবি যুক্ত করতে নিচের এডিটর প্যানেলের ছবি আইকনে চাপুন।')">🖼 ছবি গাইড</a>
+                </div>
+            </div>
+            <div class="menu-item">Tools (টুলস)
+                <div class="dropdown-content">
+                    <a onclick="alert('পেজ সাইজ A4 এবং মার্জিন স্ট্যান্ডার্ড সেট করা আছে।')">⚙ পেজ সেটিংস</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ২. কাস্টমাইজড গুগল ডক্স টুলবার (মোবাইলের জন্য শতভাগ কার্যকর) -->
+        <div id="toolbar-container">
+            <!-- ফন্ট সাইজ এবং স্টাইল -->
+            <select class="ql-size">
+                <option value="small">ছোট (12px)</option>
+                <option selected>স্বাভাবিক (16px)</option>
+                <option value="large">বড় (20px)</option>
+                <option value="huge">হেডিং (30px)</option>
+            </select>
+            
+            <!-- টেক্সট স্টাইল বাটন সমূহ -->
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            
+            <!-- অ্যালাইনমেন্ট বা লাইন চাপানো -->
+            <select class="ql-align">
+                <option selected></option>
+                <option value="center"></option>
+                <option value="right"></option>
+                <option value="justify"></option>
+            </select>
+
+            <!-- ইমেজ ও লিংক ইনসার্ট -->
+            <button class="ql-image"></button>
+            
+            <!-- কাস্টম বাংলা ফন্ট সিলেক্টর বাটন -->
+            <select id="customFontSelector" onchange="changeFont(this.value)" style="padding: 2px 5px; border: 1px solid #ccc; border-radius:4px;">
+                <option value="'Hind Siliguri', sans-serif">হিন্দ শিলিগুড়ি</option>
+                <option value="'Kalpurush', sans-serif">কালপুরুষ</option>
+                <option value="'Li Adorsho Lipi', sans-serif">আদর্শ লিপি</option>
+                <option value="'Galada', cursive">গালাদা স্টাইলিশ</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- ৩. লেখার মূল সাদা খাতা (Workspace) -->
+    <div class="workspace">
+        <div class="page-container">
+            <div id="editor">
+                <h2 style="text-align: center;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2>
+                <p style="text-align: center;">এখানে টাচ করে আপনার খতিয়ান রিপোর্ট তৈরি করুন...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- শক্তিশালী এডিটর ইঞ্জিন স্ক্রিপ্ট যুক্ত করা হলো -->
+    <script src="https://quilljs.com"></script>
+    <script>
+        // Quill এডিটর চালু করা
+        var quill = new Quill('#editor', {
+            modules: {
+                toolbar: '#toolbar-container'
+            },
+            theme: 'snow'
+        });
+
+        // ফন্ট পরিবর্তন ফাংশন
+        function changeFont(fontValue) {
+            const editorArea = document.querySelector('.ql-editor');
+            editorArea.style.fontFamily = fontValue;
+            autoSave();
+        }
+
+        // ফাইলের নাম আপডেট
+        function updateTitle() {
+            let titleVal = document.getElementById('doc-title').value;
+            document.getElementById('doc-title-display').innerText = titleVal + " - গুগল ডক্স";
+            autoSave();
+        }
+
+        // ১১ কলামের নিখুঁত টেবিল ইনসার্ট করার নিয়ম
+        function addTable() {
+            let tableHTML = `<table style="width:100%; border-collapse:collapse; margin:15px 0;">
+                <thead>
+                    <tr style="background:#f1f3f4;">
+                        ${Array(11).fill(0).map((_, i) => `<th style="border:1px solid #000; padding:5px; font-size:12px;">ঘর ${i+1}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        ${Array(11).fill(0).map(() => `<td style="border:1px solid #000; padding:5px; min-height:30px;"></td>`).join('')}
+                    </tr>
+                </tbody>
+            </table><br>`;
+            
+            const range = quill.getSelection(true);
+            quill.clipboard.dangerouslyPasteHTML(range.index, tableHTML);
+            autoSave();
+        }
+
+        // Word ফাইলে এক্সপোর্ট
+        function exportDocx() {
+            let htmlContent = document.querySelector('.ql-editor').innerHTML;
+            let blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = document.getElementById('doc-title').value + '.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // অটো-সেভ ফাংশন (Local Storage)
+        function autoSave() {
