@@ -16,13 +16,18 @@ button,select,input{font:inherit}
  position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid #dadce0;
  box-shadow:0 1px 4px #0001
 }
-.top{display:flex;align-items:center;gap:8px;padding:8px 10px}
-.title{flex:1;min-width:0;border:1px solid transparent;font-size:18px;font-weight:600;padding:7px}
+.top{
+ display:flex;align-items:center;gap:6px;padding:8px 10px;
+ overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;
+}
+.top::-webkit-scrollbar{display:none}
+.title{flex:1;min-width:120px;border:1px solid transparent;font-size:16px;font-weight:600;padding:5px}
 .title:focus{outline:1px solid #1a73e8;border-radius:5px}
 .toolbar{
  display:flex;gap:5px;padding:7px 8px;overflow-x:auto;white-space:nowrap;
  background:#f8f9fa;border-top:1px solid #eee;-webkit-overflow-scrolling:touch
 }
+.toolbar::-webkit-scrollbar{display:none}
 .toolbar button,.toolbar select{
  height:38px;border:1px solid #c7cdd4;background:#fff;border-radius:6px;
  padding:0 10px;flex:0 0 auto;cursor:pointer
@@ -30,10 +35,10 @@ button,select,input{font:inherit}
 .toolbar button:active,.toolbar select:active{background:#e8f0fe}
 .sep{width:1px;background:#d9d9d9;flex:0 0 1px;margin:3px}
 .menu{position:relative;flex:0 0 auto}
-.menu>button{height:36px;border:0;background:transparent;font-weight:600;padding:0 10px;cursor:pointer}
+.menu>button{height:36px;border:0;background:transparent;font-weight:600;padding:0 8px;cursor:pointer}
 .dropdown{
  display:none;position:fixed;z-index:9999;background:#fff;border:1px solid #dadce0;
- border-radius:8px;box-shadow:0 5px 20px #0003;min-width:245px;overflow:hidden
+ border-radius:8px;box-shadow:0 5px 20px #0003;min-width:220px;overflow:hidden
 }
 .dropdown.show{display:block}
 .dropdown button{
@@ -64,10 +69,10 @@ button,select,input{font:inherit}
 }
 .status.show{display:block}
 @media(max-width:600px){
- .workspace{padding:14px 8px}
+ .workspace{padding:14px 4px}
  .paper{margin:0}
- .top{padding:6px}
- .title{font-size:16px}
+ .top{padding:6px 8px}
+ .title{font-size:15px;min-width:100px}
 }
 @media print{
  @page{size:var(--pw) var(--ph);margin:0}
@@ -86,7 +91,7 @@ button,select,input{font:inherit}
 <body>
 <div class="appbar">
  <div class="top">
-  <span style="font-size:22px">📄</span>
+  <span style="font-size:20px;flex:0 0 auto">📄</span>
   <input id="docTitle" class="title" value="নামহীন অফিস রিপোর্ট">
   <div class="menu">
    <button onclick="openMenu('fileMenu',event,this)">File</button>
@@ -236,8 +241,8 @@ function openMenu(id,e,btn){
  const d=document.getElementById(id);
  d.classList.add('show');
  const r=btn.getBoundingClientRect();
- d.style.top=(r.bottom+3)+'px';
- d.style.left=Math.min(r.left, window.innerWidth - 260)+'px';
+ d.style.top=(r.bottom+4)+'px';
+ d.style.left=Math.max(8, Math.min(r.left, window.innerWidth - 230))+'px';
 }
 function closeMenus(){document.querySelectorAll('.dropdown').forEach(x=>x.classList.remove('show'))}
 document.addEventListener('click',e=>{if(!e.target.closest('.menu'))closeMenus()});
@@ -290,7 +295,7 @@ function insertDate(){
 }
 function newDoc(){
  if(!confirm('নতুন খালি রিপোর্ট শুরু করবেন?'))return;
- paper.innerHTML='<p><br></p>';document.getElementById('docTitle').value='নামহীন অফিস রিপোর্ট'
+ paper.html='<p><br></p>';paper.innerHTML='<p><br></p>';document.getElementById('docTitle').value='নামহীন অফিস রিপোর্ট'
 }
 function saveDoc(){
  localStorage.setItem('office_report_html',paper.innerHTML);
