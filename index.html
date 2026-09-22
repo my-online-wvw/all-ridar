@@ -1,347 +1,622 @@
-<!doctype html>
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
 <html lang="bn">
-  <head>
-    <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-        <title>অফিস রিপোর্ট এডিটর</title>
-        <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;500;600;700&family=SolaimanLipi&display=swap" rel="stylesheet">
-          <style>
-:root{
- --pw:210mm;--ph:297mm;--margin:18mm;--lh:1.15;--zoom:1;
-}
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>অফিস রিপোর্ট এডিটর</title>
+
+<style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:#f1f3f4;color:#202124;font-family:Arial,sans-serif}
+html,body{margin:0;padding:0;background:#eef1f5;color:#202124;font-family:Arial,sans-serif}
 button,select,input{font:inherit}
-.appbar{
- position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid #dadce0;
- box-shadow:0 1px 4px #0001
+:root{
+  --pw:210mm;--ph:297mm;--margin:18mm;--lh:1.15;--zoom:1;
 }
-.top{display:flex;align-items:center;gap:8px;padding:8px 10px}
-.title{flex:1;min-width:0;border:1px solid transparent;font-size:18px;font-weight:600;padding:7px}
-.title:focus{outline:1px solid #1a73e8;border-radius:5px}
+
+/* ---------- TOP BAR ---------- */
+.topbar{
+  position:sticky;top:0;z-index:1000;background:#fff;
+  border-bottom:1px solid #d9dfe7;box-shadow:0 1px 5px #0002
+}
+.topline{
+  display:flex;align-items:center;gap:7px;padding:7px 9px
+}
+.doc-title{
+  flex:1;min-width:80px;border:1px solid transparent;border-radius:6px;
+  padding:7px 8px;font-size:18px;font-weight:600
+}
+.doc-title:focus{outline:2px solid #8ab4f8}
+.menu-btn{
+  border:0;background:#fff;padding:8px 11px;border-radius:6px;
+  font-weight:600;font-size:16px
+}
+.menu-btn:active{background:#e8f0fe}
+
 .toolbar{
- display:flex;gap:5px;padding:7px 8px;overflow-x:auto;white-space:nowrap;
- background:#f8f9fa;border-top:1px solid #eee;-webkit-overflow-scrolling:touch
+  display:flex;align-items:center;gap:5px;padding:7px;
+  overflow-x:auto;white-space:nowrap;background:#f8f9fa;
+  -webkit-overflow-scrolling:touch
 }
 .toolbar button,.toolbar select{
- height:38px;border:1px solid #c7cdd4;background:#fff;border-radius:6px;
- padding:0 10px;flex:0 0 auto;cursor:pointer
+  height:38px;flex:0 0 auto;border:1px solid #c7cdd5;
+  border-radius:7px;background:#fff;padding:0 10px
 }
-.toolbar button:active,.toolbar select:active{background:#e8f0fe}
-.sep{width:1px;background:#d9d9d9;flex:0 0 1px;margin:3px}
-.menu{position:relative;flex:0 0 auto}
-.menu>button{height:36px;border:0;background:transparent;font-weight:600;padding:0 10px}
+.toolbar button:active{background:#e8f0fe}
+.sep{width:1px;height:28px;background:#d8dde5;flex:0 0 1px}
+
+/* ---------- MENUS ---------- */
+.menu{position:relative}
 .dropdown{
- display:none;position:fixed;z-index:2000;background:#fff;border:1px solid #dadce0;
- border-radius:8px;box-shadow:0 5px 20px #0003;min-width:245px;overflow:hidden
+  display:none;position:fixed;z-index:3000;min-width:245px;
+  background:#fff;border:1px solid #d8dde5;border-radius:9px;
+  box-shadow:0 7px 25px #0003;overflow:hidden
 }
 .dropdown.show{display:block}
 .dropdown button{
- width:100%;display:block;text-align:left;border:0;background:#fff;padding:11px 14px;
- cursor:pointer
+  display:block;width:100%;border:0;background:#fff;text-align:left;
+  padding:12px 14px;font-size:15px
 }
-.dropdown button:hover{background:#f1f3f4}
+.dropdown button:active{background:#e8f0fe}
+
+/* ---------- WORK AREA ---------- */
 .workspace{
- overflow:auto;padding:24px;min-height:calc(100vh - 112px);
- -webkit-overflow-scrolling:touch
+  min-height:calc(100vh - 110px);
+  overflow:auto;padding:20px;
+  -webkit-overflow-scrolling:touch
 }
+.stage{
+  width:max-content;min-width:100%;margin:0 auto;
+  padding:5px 5px 80px
+}
+
+/*
+  Page size is PHYSICALLY fixed by --pw/--ph.
+  Zoom changes ONLY the on-screen view.
+*/
 .paper{
- width:var(--pw);min-width:var(--pw);height:var(--ph);min-height:var(--ph);
- background:#fff;margin:0 auto;box-shadow:0 2px 10px #0002;
- padding:var(--margin);overflow:hidden;line-height:var(--lh);
- outline:none;transform-origin:top center
+  width:var(--pw);min-width:var(--pw);
+  height:var(--ph);min-height:var(--ph);
+  background:#fff;
+  padding:var(--margin);
+  overflow:hidden;
+  box-shadow:0 2px 14px #0002;
+  transform-origin:top left;
+  zoom:var(--zoom);
+  line-height:var(--lh);
+  outline:none;
 }
-.paper p,.paper div,.paper li,.paper td,.paper th{line-height:var(--lh)}
-.paper:focus{box-shadow:0 2px 10px #0002,0 0 0 2px #8ab4f8}
-.paper table{border-collapse:collapse;width:100%;margin:10px 0;table-layout:fixed}
-.paper td,.paper th{border:1px solid #000;padding:5px;min-width:25px;vertical-align:top;position:relative}
-.paper th{background:#f1f3f4}
-.paper img{max-width:100%}
-.cell-handle{position:absolute;right:-5px;bottom:-5px;width:10px;height:10px;border-radius:50%;background:#1a73e8;cursor:crosshair;z-index:3}
+.paper p,.paper div,.paper li,.paper td,.paper th{
+  line-height:var(--lh)
+}
+
+/* ---------- TABLE ---------- */
+.paper table{
+  width:100%;border-collapse:collapse;table-layout:fixed;margin:8px 0
+}
+.paper td,.paper th{
+  border:1px solid #111;min-width:25px;
+  padding:5px;vertical-align:top;position:relative
+}
+.paper th{font-weight:700;background:#f3f4f6}
+.col-handle{
+  position:absolute;right:-5px;top:0;width:10px;height:100%;
+  cursor:col-resize;z-index:10
+}
+.row-handle{
+  position:absolute;left:0;bottom:-5px;width:100%;height:10px;
+  cursor:row-resize;z-index:10
+}
+
+/* ---------- STATUS ---------- */
 .status{
- position:fixed;right:12px;bottom:12px;background:#202124;color:#fff;padding:8px 12px;
- border-radius:6px;font-size:13px;display:none;z-index:3000
+  position:fixed;right:12px;bottom:12px;z-index:5000;
+  background:#202124;color:#fff;border-radius:7px;padding:9px 13px;
+  font-size:13px;display:none
 }
 .status.show{display:block}
-@media(max-width:600px){
- .workspace{padding:14px 8px}
- .paper{margin:0}
- .top{padding:6px}
- .title{font-size:16px}
-}
+
+/* ---------- PRINT ---------- */
 @media print{
- @page{size:var(--pw) var(--ph);margin:0}
- html,body{background:#fff}
- .appbar,.status{display:none!important}
- .workspace{padding:0;overflow:visible}
- .paper{
-  margin:0;width:var(--pw)!important;min-width:var(--pw)!important;
-  height:var(--ph)!important;min-height:var(--ph)!important;
-  box-shadow:none;padding:var(--margin)!important;overflow:hidden;
-  page-break-after:always
- }
+  @page{size:var(--pw) var(--ph);margin:0}
+  html,body{background:#fff}
+  .topbar,.status{display:none!important}
+  .workspace{padding:0;overflow:visible}
+  .stage{padding:0;margin:0}
+  .paper{
+    zoom:1!important;
+    transform:none!important;
+    width:var(--pw)!important;min-width:var(--pw)!important;
+    height:var(--ph)!important;min-height:var(--ph)!important;
+    box-shadow:none!important;margin:0!important;
+    page-break-after:always
+  }
 }
 </style>
-        </head>
-        <body>
-          <div class="appbar">
-            <div class="top">
-              <span style="font-size:22px">📄</span>
-              <input id="docTitle" class="title" value="নামহীন অফিস রিপোর্ট">
-                <div class="menu">
-                  <button onclick="openMenu('fileMenu',this)">File</button>
-                  <div id="fileMenu" class="dropdown">
-                    <button onclick="newDoc()">📄 নতুন ডকুমেন্ট</button>
-                    <button onclick="window.print();closeMenus()">🖨️ প্রিন্ট / PDF</button>
-                    <button onclick="downloadWord();closeMenus()">📝 Word ডাউনলোড</button>
-                    <button onclick="saveDoc();closeMenus()">💾 সংরক্ষণ</button>
-                    <button onclick="loadDoc();closeMenus()">📂 সংরক্ষিত লেখা আনুন</button>
-                  </div>
-                </div>
-                <div class="menu">
-                  <button onclick="openMenu('pageMenu',this)">Page</button>
-                  <div id="pageMenu" class="dropdown">
-                    <button onclick="pageSize('A4');closeMenus()">A4 — 210 × 297 mm</button>
-                    <button onclick="pageSize('A5');closeMenus()">A5 — 148 × 210 mm</button>
-                    <button onclick="pageSize('Letter');closeMenus()">Letter — 216 × 279 mm</button>
-                    <button onclick="pageSize('Legal');closeMenus()">Legal — 216 × 356 mm</button>
-                    <button onclick="orientation('portrait');closeMenus()">↕️ Portrait</button>
-                    <button onclick="orientation('landscape');closeMenus()">↔️ Landscape</button>
-                    <button onclick="margin('10mm');closeMenus()">মার্জিন 10 mm</button>
-                    <button onclick="margin('18mm');closeMenus()">মার্জিন 18 mm</button>
-                    <button onclick="margin('25mm');closeMenus()">মার্জিন 25 mm</button>
-                  </div>
-                </div>
-                <div class="menu">
-                  <button onclick="openMenu('insertMenu',this)">Insert</button>
-                  <div id="insertMenu" class="dropdown">
-                    <button onclick="makeTable();closeMenus()">📋 ইচ্ছামতো টেবিল</button>
-                    <button onclick="addRow();closeMenus()">➕ Row যোগ</button>
-                    <button onclick="addCol();closeMenus()">➕ Column যোগ</button>
-                    <button onclick="delRow();closeMenus()">➖ Row মুছুন</button>
-                    <button onclick="delCol();closeMenus()">➖ Column মুছুন</button>
-                    <button onclick="pageBreak();closeMenus()">📄 Page Break</button>
-                    <button onclick="insertDate();closeMenus()">📅 আজকের তারিখ</button>
-                  </div>
-                </div>
-                <div class="menu">
-                  <button onclick="openMenu('formatMenu',this)">Format</button>
-                  <div id="formatMenu" class="dropdown">
-                    <button onclick="lineSpacing(.5);closeMenus()">Line spacing 0.5</button>
-                    <button onclick="lineSpacing(.75);closeMenus()">Line spacing 0.75</button>
-                    <button onclick="lineSpacing(1);closeMenus()">Line spacing 1.0</button>
-                    <button onclick="lineSpacing(1.15);closeMenus()">Line spacing 1.15</button>
-                    <button onclick="lineSpacing(1.5);closeMenus()">Line spacing 1.5</button>
-                    <button onclick="lineSpacing(2);closeMenus()">Line spacing 2.0</button>
-                    <button onclick="lineSpacing(2.5);closeMenus()">Line spacing 2.5</button>
-                    <button onclick="lineSpacing(3);closeMenus()">Line spacing 3.0</button>
-                  </div>
-                </div>
-              </div>
-              <div class="toolbar">
-                <select id="font" onchange="font(this.value)">
-                  <option value="Arial">Arial</option>
-                  <option value="Times New Roman">Times New Roman</option>
-                  <option value="Georgia">Georgia</option>
-                  <option value="Verdana">Verdana</option>
-                  <option value="Tahoma">Tahoma</option>
-                  <option value="'Hind Siliguri'">Hind Siliguri</option>
-                  <option value="'Noto Sans Bengali'">Noto Sans Bengali</option>
-                  <option value="'Noto Serif Bengali'">Noto Serif Bengali</option>
-                  <option value="SolaimanLipi">SolaimanLipi</option>
-                  <option value="serif">Serif</option>
-                  <option value="sans-serif">Sans Serif</option>
-                </select>
-                <button onclick="fontSize(-1)">−</button>
-                <select id="size" onchange="setSize(this.value)">
-                  <option>8</option>
-                  <option>9</option>
-                  <option>10</option>
-                  <option>11</option>
-                  <option>12</option>
-                  <option>13</option>
-                  <option>14</option>
-                  <option>15</option>
-                  <option selected>16</option>
-                  <option>17</option>
-                  <option>18</option>
-                  <option>19</option>
-                  <option>20</option>
-                  <option>21</option>
-                  <option>22</option>
-                  <option>23</option>
-                  <option>24</option>
-                  <option>25</option>
-                  <option>26</option>
-                  <option>27</option>
-                  <option>28</option>
-                  <option>29</option>
-                  <option>30</option>
-                  <option>32</option>
-                  <option>36</option>
-                  <option>40</option>
-                  <option>48</option>
-                  <option>60</option>
-                  <option>72</option>
-                </select>
-                <button onclick="fontSize(1)">+</button>
-                <span class="sep">
-                </span>
-                <button onclick="cmd('bold')">
-                  <b>B</b>
-                </button>
-                <button onclick="cmd('italic')">
-                  <i>I</i>
-                </button>
-                <button onclick="cmd('underline')">
-                  <u>U</u>
-                </button>
-                <button onclick="cmd('justifyLeft')">≡ বামে</button>
-                <button onclick="cmd('justifyCenter')">≡ মাঝে</button>
-                <button onclick="cmd('justifyRight')">≡ ডানে</button>
-                <button onclick="cmd('justifyFull')">☰ সমান</button>
-                <button onclick="makeTable()">📋 টেবিল</button>
-              </div>
-            </div>
-            <div class="workspace">
-              <div id="paper" class="paper" contenteditable="true" spellcheck="true">
-                <p>
-                  <br>
-                  </p>
-                </div>
-              </div>
-              <div id="status" class="status">
-              </div>
-              <script>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="topline">
+    <span style="font-size:23px">📄</span>
+    <input id="docTitle" class="doc-title" value="নামহীন অফিস রিপোর্ট">
+
+    <div class="menu">
+      <button class="menu-btn" onclick="openMenu('fileMenu',this)">File</button>
+      <div id="fileMenu" class="dropdown">
+        <button onclick="newDoc()">📄 নতুন রিপোর্ট</button>
+        <button onclick="saveDoc()">💾 সংরক্ষণ</button>
+        <button onclick="loadDoc()">📂 সংরক্ষিত রিপোর্ট</button>
+        <button onclick="printDoc()">🖨️ Print / PDF</button>
+        <button onclick="downloadWord()">📝 Word</button>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="menu-btn" onclick="openMenu('pageMenu',this)">Page</button>
+      <div id="pageMenu" class="dropdown">
+        <button onclick="setPage('A4')">A4 — 210 × 297 mm</button>
+        <button onclick="setPage('A5')">A5 — 148 × 210 mm</button>
+        <button onclick="setPage('Letter')">Letter — 216 × 279 mm</button>
+        <button onclick="setPage('Legal')">Legal — 216 × 356 mm</button>
+        <button onclick="setOrientation('portrait')">↕ Portrait</button>
+        <button onclick="setOrientation('landscape')">↔ Landscape</button>
+        <button onclick="setMargin('10mm')">Margin 10 mm</button>
+        <button onclick="setMargin('18mm')">Margin 18 mm</button>
+        <button onclick="setMargin('25mm')">Margin 25 mm</button>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="menu-btn" onclick="openMenu('insertMenu',this)">Insert</button>
+      <div id="insertMenu" class="dropdown">
+        <button onclick="makeTable()">📋 ইচ্ছামতো টেবিল</button>
+        <button onclick="addRow()">➕ Row যোগ</button>
+        <button onclick="addCol()">➕ Column যোগ</button>
+        <button onclick="deleteRow()">➖ Row মুছুন</button>
+        <button onclick="deleteCol()">➖ Column মুছুন</button>
+        <button onclick="pageBreak()">📄 Page Break</button>
+        <button onclick="insertDate()">📅 তারিখ</button>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="menu-btn" onclick="openMenu('formatMenu',this)">Format</button>
+      <div id="formatMenu" class="dropdown">
+        <button onclick="setLine(0.5)">Line spacing 0.5</button>
+        <button onclick="setLine(0.75)">Line spacing 0.75</button>
+        <button onclick="setLine(1)">Line spacing 1.0</button>
+        <button onclick="setLine(1.15)">Line spacing 1.15</button>
+        <button onclick="setLine(1.5)">Line spacing 1.5</button>
+        <button onclick="setLine(2)">Line spacing 2.0</button>
+        <button onclick="setLine(2.5)">Line spacing 2.5</button>
+        <button onclick="setLine(3)">Line spacing 3.0</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <select id="font" onchange="setFont(this.value)">
+      <option value="Arial">Arial</option>
+      <option value="Times New Roman">Times New Roman</option>
+      <option value="Georgia">Georgia</option>
+      <option value="Verdana">Verdana</option>
+      <option value="Tahoma">Tahoma</option>
+      <option value="Noto Sans Bengali">Noto Sans Bengali</option>
+      <option value="Noto Serif Bengali">Noto Serif Bengali</option>
+      <option value="Hind Siliguri">Hind Siliguri</option>
+      <option value="SolaimanLipi">SolaimanLipi</option>
+      <option value="Siyam Rupali">Siyam Rupali</option>
+      <option value="Kalpurush">Kalpurush</option>
+      <option value="Nikosh">Nikosh</option>
+      <option value="serif">Serif</option>
+      <option value="sans-serif">Sans Serif</option>
+    </select>
+
+    <button onclick="changeSize(-1)">−</button>
+    <select id="fontSize" onchange="setFontSize(this.value)">
+      <option>8</option><option>9</option><option>10</option><option>11</option>
+      <option>12</option><option>13</option><option>14</option><option>15</option>
+      <option selected>16</option><option>17</option><option>18</option><option>19</option>
+      <option>20</option><option>21</option><option>22</option><option>23</option>
+      <option>24</option><option>25</option><option>26</option><option>27</option>
+      <option>28</option><option>29</option><option>30</option><option>32</option>
+      <option>36</option><option>40</option><option>48</option><option>60</option>
+      <option>72</option>
+    </select>
+    <button onclick="changeSize(1)">+</button>
+
+    <span class="sep"></span>
+    <button onclick="cmd('bold')"><b>B</b></button>
+    <button onclick="cmd('italic')"><i>I</i></button>
+    <button onclick="cmd('underline')"><u>U</u></button>
+    <button onclick="cmd('justifyLeft')">বামে</button>
+    <button onclick="cmd('justifyCenter')">মাঝে</button>
+    <button onclick="cmd('justifyRight')">ডানে</button>
+    <button onclick="cmd('justifyFull')">সমান</button>
+
+    <span class="sep"></span>
+
+    <!-- ZOOM: changes only screen view, NOT page size -->
+    <button onclick="changeZoom(-0.1)">🔍 −</button>
+    <select id="zoom" onchange="setZoom(this.value)">
+      <option value="0.4">40%</option>
+      <option value="0.5">50%</option>
+      <option value="0.6">60%</option>
+      <option value="0.75">75%</option>
+      <option value="0.9">90%</option>
+      <option value="1" selected>100%</option>
+      <option value="1.25">125%</option>
+      <option value="1.5">150%</option>
+      <option value="1.75">175%</option>
+      <option value="2">200%</option>
+      <option value="2.5">250%</option>
+    </select>
+    <button onclick="changeZoom(0.1)">🔍 +</button>
+    <button onclick="fitWidth()">Fit</button>
+
+    <span class="sep"></span>
+    <button onclick="makeTable()">📋 টেবিল</button>
+  </div>
+</div>
+
+<div class="workspace" id="workspace">
+  <div class="stage">
+    <div id="paper" class="paper" contenteditable="true" spellcheck="true">
+      <p><br></p>
+    </div>
+  </div>
+</div>
+
+<div id="status" class="status"></div>
+
+<script>
 const paper=document.getElementById('paper');
+const workspace=document.getElementById('workspace');
 let savedRange=null;
+let pageName='A4';
+let orientation='portrait';
+
+const sizes={
+  A4:['210mm','297mm'],
+  A5:['148mm','210mm'],
+  Letter:['216mm','279mm'],
+  Legal:['216mm','356mm']
+};
 
 function remember(){
- const s=getSelection();
- if(s.rangeCount && paper.contains(s.anchorNode)) savedRange=s.getRangeAt(0).cloneRange();
+  const s=getSelection();
+  if(s.rangeCount && paper.contains(s.anchorNode)){
+    savedRange=s.getRangeAt(0).cloneRange();
+  }
 }
-['mouseup','keyup','touchend'].forEach(e=>paper.addEventListener(e,()=>setTimeout(remember,0)));
+['mouseup','keyup','touchend','blur'].forEach(e=>{
+  paper.addEventListener(e,()=>setTimeout(remember,20));
+});
 
 function restore(){
- if(!savedRange)return;
- const s=getSelection();s.removeAllRanges();s.addRange(savedRange);
+  if(!savedRange)return;
+  const s=getSelection();
+  s.removeAllRanges();
+  try{s.addRange(savedRange)}catch(e){}
 }
-function cmd(c){
- restore();paper.focus();document.execCommand(c,false,null);remember();
-}
-function font(v){restore();paper.focus();document.execCommand('fontName',false,v);remember()}
-function setSize(v){
- restore();paper.focus();document.execCommand('fontSize',false,'7');
- paper.querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute('size');x.style.fontSize=v+'px'});
- remember()
-}
-function fontSize(step){
- let n=parseInt(document.getElementById('size').value,10)+step;
- n=Math.max(8,Math.min(72,n));document.getElementById('size').value=n;setSize(n)
-}
-function lineSpacing(v){
- document.documentElement.style.setProperty('--lh',v);
- toast('Line spacing '+v)
-}
-const paperSizes={
- A4:['210mm','297mm'],A5:['148mm','210mm'],
- Letter:['216mm','279mm'],Legal:['216mm','356mm']
-};
-let currentSize='A4', currentOrientation='portrait';
 
-function pageSize(name){
- currentSize=name;
- let [w,h]=paperSizes[name];
- if(currentOrientation==='landscape')[w,h]=[h,w];
- document.documentElement.style.setProperty('--pw',w);
- document.documentElement.style.setProperty('--ph',h);
- toast(name+' page size স্থির হয়েছে')
+function cmd(command){
+  restore();
+  paper.focus();
+  document.execCommand(command,false,null);
+  remember();
 }
-function orientation(o){
- currentOrientation=o;
- pageSize(currentSize);
- toast(o==='portrait'?'Portrait স্থির হয়েছে':'Landscape স্থির হয়েছে')
-}
-function margin(v){document.documentElement.style.setProperty('--margin',v);toast('Margin '+v)}
-function openMenu(id,btn){
- closeMenus();const d=document.getElementById(id);d.classList.add('show');
- const r=btn.getBoundingClientRect();d.style.top=(r.bottom+3)+'px';d.style.left=Math.min(r.left,innerWidth-250)+'px'
-}
-function closeMenus(){document.querySelectorAll('.dropdown').forEach(x=>x.classList.remove('show'))}
-document.addEventListener('click',e=>{if(!e.target.closest('.menu'))closeMenus()});
 
-function tableAtCursor(){
- restore();let n=getSelection().anchorNode;
- if(n&&n.nodeType===3)n=n.parentElement;
- return n?.closest?.('table')||null
+function setFont(name){
+  restore();
+  paper.focus();
+  document.execCommand('fontName',false,name);
+  remember();
 }
+
+function setFontSize(px){
+  restore();
+  paper.focus();
+  document.execCommand('fontSize',false,'7');
+  paper.querySelectorAll('font[size="7"]').forEach(el=>{
+    el.removeAttribute('size');
+    el.style.fontSize=px+'px';
+  });
+  remember();
+}
+
+function changeSize(delta){
+  const box=document.getElementById('fontSize');
+  let n=parseInt(box.value,10)+delta;
+  n=Math.max(8,Math.min(72,n));
+  box.value=n;
+  setFontSize(n);
+}
+
+function setLine(v){
+  document.documentElement.style.setProperty('--lh',v);
+  toast('Line spacing '+v);
+  closeMenus();
+}
+
+function setPage(name){
+  pageName=name;
+  applyPage();
+  closeMenus();
+  toast(name+' Page Size স্থির করা হয়েছে');
+}
+
+function setOrientation(value){
+  orientation=value;
+  applyPage();
+  closeMenus();
+  toast(value==='portrait'?'Portrait স্থির':'Landscape স্থির');
+}
+
+function applyPage(){
+  let [w,h]=sizes[pageName];
+  if(orientation==='landscape')[w,h]=[h,w];
+  document.documentElement.style.setProperty('--pw',w);
+  document.documentElement.style.setProperty('--ph',h);
+}
+
+function setMargin(v){
+  document.documentElement.style.setProperty('--margin',v);
+  closeMenus();
+  toast('Margin '+v);
+}
+
+/* ---------- ZOOM ---------- */
+function setZoom(v){
+  v=parseFloat(v);
+  if(!isFinite(v))v=1;
+  v=Math.max(.4,Math.min(2.5,v));
+  document.documentElement.style.setProperty('--zoom',v);
+  document.getElementById('zoom').value=String(v);
+}
+
+function changeZoom(delta){
+  const current=parseFloat(document.getElementById('zoom').value);
+  let next=Math.round((current+delta)*100)/100;
+  next=Math.max(.4,Math.min(2.5,next));
+  setZoom(next);
+}
+
+/* Fit page to the available mobile workspace width.
+   This changes ONLY zoom; selected physical page size remains unchanged. */
+function fitWidth(){
+  const width=workspace.clientWidth-20;
+  const paperPx=paper.offsetWidth;
+  if(!paperPx)return;
+  const z=Math.max(.4,Math.min(2.5,width/paperPx));
+  setZoom(Math.round(z*100)/100);
+}
+
+/* ---------- MENUS ---------- */
+function openMenu(id,button){
+  closeMenus();
+  const menu=document.getElementById(id);
+  menu.classList.add('show');
+  const r=button.getBoundingClientRect();
+  menu.style.top=(r.bottom+3)+'px';
+  menu.style.left=Math.max(4,Math.min(r.left,innerWidth-250))+'px';
+}
+function closeMenus(){
+  document.querySelectorAll('.dropdown').forEach(x=>x.classList.remove('show'));
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.menu'))closeMenus();
+});
+
+/* ---------- TABLE ---------- */
+function currentTable(){
+  restore();
+  let n=getSelection().anchorNode;
+  if(n && n.nodeType===3)n=n.parentElement;
+  return n && n.closest ? n.closest('table'):null;
+}
+
+function addResizeHandles(table){
+  table.querySelectorAll('td,th').forEach(cell=>{
+    if(cell.querySelector('.col-handle'))return;
+    const h=document.createElement('span');
+    h.className='col-handle';
+    cell.appendChild(h);
+    h.addEventListener('pointerdown',startColResize);
+  });
+}
+
+function startColResize(e){
+  e.preventDefault();
+  e.stopPropagation();
+
+  const cell=e.currentTarget.parentElement;
+  const table=cell.closest('table');
+  const col=cell.cellIndex;
+  const startX=e.clientX;
+  const startW=cell.getBoundingClientRect().width;
+
+  function move(ev){
+    const w=Math.max(35,startW+(ev.clientX-startX));
+    [...table.rows].forEach(row=>{
+      if(row.cells[col])row.cells[col].style.width=w+'px';
+    });
+  }
+  function up(){
+    document.removeEventListener('pointermove',move);
+    document.removeEventListener('pointerup',up);
+  }
+  document.addEventListener('pointermove',move);
+  document.addEventListener('pointerup',up);
+}
+
 function makeTable(){
- let r=parseInt(prompt('কতটি Row চান?','5'),10);
- if(!r)return;
- let c=parseInt(prompt('কতটি Column চান?','4'),10);
- if(!c)return;
- r=Math.min(50,Math.max(1,r));c=Math.min(20,Math.max(1,c));
- restore();paper.focus();
- let h='<table><tbody>';
- for(let i=0;i<r;i++){
-  h+='<tr>';
-  for(let j=0;j<c;j++)h+=(i===0?'<th>শিরোনাম</th>':'<td><br></td>');
-  h+='</tr>'
- }
- h+='</tbody></table><p><br></p>';
- document.execCommand('insertHTML',false,h);remember();toast(r+' × '+c+' টেবিল তৈরি হয়েছে')
-}
-function addRow(){
- const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
- const r=t.insertRow(-1);
- for(let i=0;i<t.rows[0].cells.length;i++)r.insertCell(-1).innerHTML='<br>';
-}
-function addCol(){
- const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
- for(let i=0;i<t.rows.length;i++)t.rows[i].insertCell(-1).innerHTML=i===0?'শিরোনাম':'<br>';
-}
-function delRow(){
- const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
- if(t.rows.length>1)t.deleteRow(-1)
-}
-function delCol(){
- const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
- if(t.rows[0].cells.length>1)for(const r of t.rows)r.deleteCell(-1)
-}
-function pageBreak(){
- restore();paper.focus();document.execCommand('insertHTML',false,'<div style="page-break-before:always"></div><p><br></p>')
-}
-function insertDate(){
- restore();paper.focus();
- const d=new Date();const x=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
- document.execCommand('insertText',false,x)
-}
-function newDoc(){
- if(!confirm('নতুন খালি রিপোর্ট শুরু করবেন?'))return;
- paper.innerHTML='<p><br></p>';document.getElementById('docTitle').value='নামহীন অফিস রিপোর্ট'
-}
-function saveDoc(){
- localStorage.setItem('office_report_html',paper.innerHTML);
- localStorage.setItem('office_report_title',document.getElementById('docTitle').value);
- toast('রিপোর্ট সংরক্ষণ হয়েছে')
-}
-function loadDoc(){
- const h=localStorage.getItem('office_report_html');
- if(!h){alert('কোনো সংরক্ষিত রিপোর্ট নেই।');return}
- paper.innerHTML=h;
- const t=localStorage.getItem('office_report_title');if(t)document.getElementById('docTitle').value=t;
- toast('রিপোর্ট আনা হয়েছে')
-}
-function downloadWord(){
- const name=(document.getElementById('docTitle').value||'অফিস-রিপোর্ট').replace(/[\\/:*?"<>|]/g,'_');
- const html='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}td,th{border:1px solid #000;padding:5px}</style></head><body>'+paper.innerHTML+'</body></html>';
- const a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff',html],{type:'application/msword'}));
- a.href=u;a.download=name+'.doc';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)
-}
-function toast(t){const s=document.getElementById('status');s.textContent=t;s.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>s.classList.remove('show'),1600)}
+  let rows=parseInt(prompt('কতটি Row চান?','5'),10);
+  if(!rows)return;
+  let cols=parseInt(prompt('কতটি Column চান?','4'),10);
+  if(!cols)return;
 
-document.getElementById('docTitle').addEventListener('input',e=>document.title=e.target.value);
-pageSize('A4');
+  rows=Math.min(50,Math.max(1,rows));
+  cols=Math.min(20,Math.max(1,cols));
+
+  restore();
+  paper.focus();
+
+  let html='<table><tbody>';
+  for(let r=0;r<rows;r++){
+    html+='<tr>';
+    for(let c=0;c<cols;c++){
+      html+=(r===0?'<th>শিরোনাম</th>':'<td><br></td>');
+    }
+    html+='</tr>';
+  }
+  html+='</tbody></table><p><br></p>';
+
+  document.execCommand('insertHTML',false,html);
+  const tables=paper.querySelectorAll('table');
+  addResizeHandles(tables[tables.length-1]);
+  remember();
+  toast(rows+' × '+cols+' টেবিল তৈরি হয়েছে');
+}
+
+function addRow(){
+  const t=currentTable();
+  if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
+  const row=t.insertRow(-1);
+  const count=t.rows[0].cells.length;
+  for(let i=0;i<count;i++)row.insertCell(-1).innerHTML='<br>';
+  addResizeHandles(t);
+}
+
+function addCol(){
+  const t=currentTable();
+  if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
+  [...t.rows].forEach((r,i)=>{
+    const c=r.insertCell(-1);
+    c.innerHTML=i===0?'শিরোনাম':'<br>';
+  });
+  addResizeHandles(t);
+}
+
+function deleteRow(){
+  const t=currentTable();
+  if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
+  if(t.rows.length>1)t.deleteRow(-1);
+}
+
+function deleteCol(){
+  const t=currentTable();
+  if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
+  if(t.rows[0].cells.length>1){
+    [...t.rows].forEach(r=>r.deleteCell(-1));
+  }
+}
+
+function pageBreak(){
+  restore();
+  paper.focus();
+  document.execCommand(
+    'insertHTML',false,
+    '<div style="page-break-before:always"></div><p><br></p>'
+  );
+}
+
+function insertDate(){
+  restore();
+  paper.focus();
+  const d=new Date();
+  const text=String(d.getDate()).padStart(2,'0')+'/'+
+             String(d.getMonth()+1).padStart(2,'0')+'/'+
+             d.getFullYear();
+  document.execCommand('insertText',false,text);
+}
+
+/* ---------- FILE ---------- */
+function newDoc(){
+  closeMenus();
+  if(!confirm('নতুন খালি রিপোর্ট শুরু করবেন?'))return;
+  paper.innerHTML='<p><br></p>';
+  document.getElementById('docTitle').value='নামহীন অফিস রিপোর্ট';
+}
+
+function saveDoc(){
+  localStorage.setItem('office_report_html',paper.innerHTML);
+  localStorage.setItem('office_report_title',document.getElementById('docTitle').value);
+  localStorage.setItem('office_report_page',JSON.stringify({
+    pageName,orientation,
+    margin:getComputedStyle(document.documentElement).getPropertyValue('--margin'),
+    lh:getComputedStyle(document.documentElement).getPropertyValue('--lh')
+  }));
+  closeMenus();
+  toast('রিপোর্ট সংরক্ষণ হয়েছে');
+}
+
+function loadDoc(){
+  const html=localStorage.getItem('office_report_html');
+  if(!html){alert('কোনো সংরক্ষিত রিপোর্ট নেই।');return}
+  paper.innerHTML=html;
+  document.getElementById('docTitle').value=
+    localStorage.getItem('office_report_title')||'নামহীন অফিস রিপোর্ট';
+
+  paper.querySelectorAll('table').forEach(addResizeHandles);
+
+  const p=JSON.parse(localStorage.getItem('office_report_page')||'null');
+  if(p){
+    pageName=p.pageName||'A4';
+    orientation=p.orientation||'portrait';
+    if(p.margin)document.documentElement.style.setProperty('--margin',p.margin);
+    if(p.lh)document.documentElement.style.setProperty('--lh',p.lh);
+    applyPage();
+  }
+  closeMenus();
+  toast('রিপোর্ট আনা হয়েছে');
+}
+
+function printDoc(){
+  closeMenus();
+  window.print();
+}
+
+function downloadWord(){
+  closeMenus();
+  const name=(document.getElementById('docTitle').value||'অফিস-রিপোর্ট')
+    .replace(/[\\/:*?"<>|]/g,'_');
+
+  const html='<!doctype html><html lang="bn"><head><meta charset="utf-8">'+
+    '<style>body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}'+
+    'td,th{border:1px solid #000;padding:5px}</style></head><body>'+
+    paper.innerHTML+'</body></html>';
+
+  const blob=new Blob(['\ufeff',html],{type:'application/msword'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name+'.doc';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+/* ---------- STATUS ---------- */
+function toast(text){
+  const s=document.getElementById('status');
+  s.textContent=text;s.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer=setTimeout(()=>s.classList.remove('show'),1700);
+}
+
+document.getElementById('docTitle').addEventListener('input',e=>{
+  document.title=e.target.value||'অফিস রিপোর্ট এডিটর';
+});
+
+/* Start with fixed A4 physical page and 100% view. */
+setPage('A4');
+setOrientation('portrait');
 </script>
-            </body>
-          </html>
+</body>
+</html>'''
+
+out=Path("/mnt/data/অফিস_রিপোর্ট_এডিটর_জুম_সহ.html")
+out.write_text(html,encoding="utf-8")
+print(out)
