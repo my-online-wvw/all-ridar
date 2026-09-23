@@ -7,78 +7,83 @@
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;500;600;700&family=SolaimanLipi&display=swap" rel="stylesheet">
 <style>
 :root{
- --pw:210mm;--ph:297mm;--margin:18mm;--lh:1.15;--zoom:1;
+ --pw:210mm;--ph:297mm;--margin:18mm;--lh:1.15;
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:#f1f3f4;color:#202124;font-family:Arial,sans-serif}
+html,body{margin:0;padding:0;background:#e8eaed;color:#202124;font-family:Arial,sans-serif;height:100%;overflow:hidden}
 button,select,input{font:inherit}
 .appbar{
- position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid #dadce0;
+ position:fixed;top:0;left:0;width:100%;z-index:1000;background:#fff;border-bottom:1px solid #dadce0;
  box-shadow:0 1px 4px #0001
 }
-.top{
- display:flex;align-items:center;gap:6px;padding:8px 10px;
- overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;
-}
-.top::-webkit-scrollbar{display:none}
-.title{flex:1;min-width:120px;border:1px solid transparent;font-size:16px;font-weight:600;padding:5px}
-.title:focus{outline:1px solid #1a73e8;border-radius:5px}
 .toolbar{
- display:flex;gap:5px;padding:7px 8px;overflow-x:auto;white-space:nowrap;
- background:#f8f9fa;border-top:1px solid #eee;-webkit-overflow-scrolling:touch
+ display:flex;align-items:center;gap:4px;padding:6px 8px;
+ overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;
+ background:#fff;
 }
 .toolbar::-webkit-scrollbar{display:none}
+.doc-title-input{
+ width:140px;border:1px solid #dfe1e5;border-radius:4px;font-size:13px;font-weight:600;padding:5px 8px;background:#fff;flex:0 0 auto;
+}
+.doc-title-input:focus{outline:2px solid #1a73e8}
 .toolbar button,.toolbar select{
- height:38px;border:1px solid #c7cdd4;background:#fff;border-radius:6px;
- padding:0 10px;flex:0 0 auto;cursor:pointer
+ height:34px;border:1px solid #c7cdd4;background:#fff;border-radius:5px;
+ padding:0 8px;flex:0 0 auto;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;
 }
 .toolbar button:active,.toolbar select:active{background:#e8f0fe}
-.sep{width:1px;background:#d9d9d9;flex:0 0 1px;margin:3px}
+.sep{width:1px;background:#d9d9d9;flex:0 0 1px;margin:2px 4px}
+
 .menu{position:relative;flex:0 0 auto}
-.menu>button{height:36px;border:0;background:transparent;font-weight:600;padding:0 8px;cursor:pointer}
 .dropdown{
- display:none;position:fixed;z-index:9999;background:#fff;border:1px solid #dadce0;
- border-radius:8px;box-shadow:0 5px 20px #0003;min-width:220px;overflow:hidden
+ display:none;position:absolute;top:100%;left:0;z-index:9999;background:#fff;
+ border:1px solid #dadce0;border-radius:8px;box-shadow:0 5px 20px #0003;
+ min-width:180px;overflow:hidden
 }
 .dropdown.show{display:block}
 .dropdown button{
- width:100%;display:block;text-align:left;border:0;background:#fff;padding:11px 14px;
- cursor:pointer
+ width:100%;display:block;text-align:left;border:0;background:#fff;padding:10px 12px;
+ cursor:pointer;font-size:13px;height:auto;border-radius:0;
 }
 .dropdown button:hover{background:#f1f3f4}
+
 .workspace{
- overflow:auto;padding:24px;min-height:calc(100vh - 112px);
- -webkit-overflow-scrolling:touch;display:flex;justify-content:center;
+ position:absolute;top:52px;bottom:0;left:0;width:100%;
+ overflow:auto;padding:20px 8px;
+ -webkit-overflow-scrolling:touch;display:flex;justify-content:center;align-items:flex-start;
 }
 .paper{
  width:var(--pw);min-width:var(--pw);height:var(--ph);min-height:var(--ph);
- background:#fff;box-shadow:0 2px 10px #0002;
+ background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.15);
  padding:var(--margin);overflow:hidden;line-height:var(--lh);
- outline:none;transform-origin:top center
+ outline:none;transform-origin:top center;margin:0 auto;font-size:16px;
 }
 .paper p,.paper div,.paper li,.paper td,.paper th{line-height:var(--lh)}
-.paper:focus{box-shadow:0 2px 10px #0002,0 0 0 2px #8ab4f8}
+.paper:focus{box-shadow:0 4px 16px rgba(0,0,0,0.15),0 0 0 2px #1a73e8}
 .paper table{border-collapse:collapse;width:100%;margin:10px 0;table-layout:fixed}
 .paper td,.paper th{border:1px solid #000;padding:5px;min-width:25px;vertical-align:top;position:relative}
 .paper th{background:#f1f3f4}
 .paper img{max-width:100%}
-.cell-handle{position:absolute;right:-5px;bottom:-5px;width:10px;height:10px;border-radius:50%;background:#1a73e8;cursor:crosshair;z-index:3}
 .status{
  position:fixed;right:12px;bottom:12px;background:#202124;color:#fff;padding:8px 12px;
  border-radius:6px;font-size:13px;display:none;z-index:30000
 }
 .status.show{display:block}
-@media(max-width:600px){
- .workspace{padding:14px 4px}
- .paper{margin:0}
- .top{padding:6px 8px}
- .title{font-size:15px;min-width:100px}
+
+@media(max-width:850px){
+ .workspace{padding:10px 4px}
+ .paper{
+  width:100%!important;min-width:100%!important;max-width:100%!important;
+  height:auto!important;min-height:calc(100vh - 70px)!important;
+  box-shadow:0 1px 4px rgba(0,0,0,0.1);padding:15px!important;
+  margin:0 auto;
+ }
 }
+
 @media print{
  @page{size:var(--pw) var(--ph);margin:0}
- html,body{background:#fff}
+ html,body{background:#fff;overflow:visible}
  .appbar,.status{display:none!important}
- .workspace{padding:0;overflow:visible;display:block}
+ .workspace{position:static;padding:0;overflow:visible;display:block}
  .paper{
   margin:0;width:var(--pw)!important;min-width:var(--pw)!important;
   height:var(--ph)!important;min-height:var(--ph)!important;
@@ -89,22 +94,94 @@ button,select,input{font:inherit}
 </style>
 </head>
 <body>
+
 <div class="appbar">
- <div class="top">
-  <span style="font-size:20px;flex:0 0 auto">📄</span>
-  <input id="docTitle" class="title" value="নামহীন অফিস রিপোর্ট">
+ <div class="toolbar">
+  <input id="docTitle" class="doc-title-input" value="নামহীন অফিস রিপোর্ট" placeholder="ফাইলের নাম">
+  <span class="sep"></span>
+  
+  <select id="font" onchange="applyStyle('fontName', this.value)">
+   <option value="Arial">Arial</option>
+   <option value="Times New Roman">Times New Roman</option>
+   <option value="Georgia">Georgia</option>
+   <option value="Verdana">Verdana</option>
+   <option value="Tahoma">Tahoma</option>
+   <option value="'Hind Siliguri'">Hind Siliguri</option>
+   <option value="'Noto Sans Bengali'">Noto Sans Bengali</option>
+   <option value="'Noto Serif Bengali'">Noto Serif Bengali</option>
+   <option value="SolaimanLipi">SolaimanLipi</option>
+  </select>
+
+  <select id="size" onchange="applyFontSize(this.value)">
+   <option value="10">10</option>
+   <option value="11">11</option>
+   <option value="12">12</option>
+   <option value="13">13</option>
+   <option value="14">14</option>
+   <option value="15">15</option>
+   <option value="16" selected>16</option>
+   <option value="18">18</option>
+   <option value="20">20</option>
+   <option value="24">24</option>
+   <option value="28">28</option>
+   <option value="32">32</option>
+  </select>
+
+  <button onclick="applyStyle('bold')" style="font-weight:bold;">B</button>
+  <button onclick="applyStyle('italic')" style="font-style:italic;">I</button>
+  <button onclick="applyStyle('underline')" style="text-decoration:underline;">U</button>
+  
+  <span class="sep"></span>
+  <button onclick="applyStyle('justifyLeft')">≡ বাম</button>
+  <button onclick="applyStyle('justifyCenter')">≡ মাঝ</button>
+  <button onclick="applyStyle('justifyRight')">≡ ডান</button>
+  <button onclick="applyStyle('justifyFull')">☰ সমান</button>
+
+  <span class="sep"></span>
+
+  <!-- Insert Menu -->
   <div class="menu">
-   <button onclick="openMenu('fileMenu',event,this)">File</button>
-   <div id="fileMenu" class="dropdown">
-    <button onclick="newDoc()">📄 নতুন ডকুমেন্ট</button>
-    <button onclick="window.print();closeMenus()">🖨️ প্রিন্ট / PDF</button>
-    <button onclick="downloadWord();closeMenus()">📝 Word ডাউনলোড</button>
-    <button onclick="saveDoc();closeMenus()">💾 সংরক্ষণ</button>
-    <button onclick="loadDoc();closeMenus()">📂 সংরক্ষিত লেখা আনুন</button>
+   <button onclick="toggleMenu('insertMenu',event)">Insert ▾</button>
+   <div id="insertMenu" class="dropdown">
+    <button onclick="makeTable();closeMenus()">📋 টেবিল তৈরি</button>
+    <button onclick="addRow();closeMenus()">➕ Row যোগ</button>
+    <button onclick="addCol();closeMenus()">➕ Column যোগ</button>
+    <button onclick="delRow();closeMenus()">➖ Row মুছুন</button>
+    <button onclick="delCol();closeMenus()">➖ Column মুছুন</button>
+    <button onclick="pageBreak();closeMenus()">📄 Page Break</button>
+    <button onclick="insertDate();closeMenus()">📅 আজকের তারিখ</button>
    </div>
   </div>
+
+  <!-- Format Menu -->
   <div class="menu">
-   <button onclick="openMenu('pageMenu',event,this)">Page</button>
+   <button onclick="toggleMenu('formatMenu',event)">Format ▾</button>
+   <div id="formatMenu" class="dropdown">
+    <button onclick="lineSpacing(0.5);closeMenus()">Line spacing 0.5</button>
+    <button onclick="lineSpacing(0.75);closeMenus()">Line spacing 0.75</button>
+    <button onclick="lineSpacing(1);closeMenus()">Line spacing 1.0</button>
+    <button onclick="lineSpacing(1.15);closeMenus()">Line spacing 1.15</button>
+    <button onclick="lineSpacing(1.5);closeMenus()">Line spacing 1.5</button>
+    <button onclick="lineSpacing(2);closeMenus()">Line spacing 2.0</button>
+    <button onclick="lineSpacing(2.5);closeMenus()">Line spacing 2.5</button>
+    <button onclick="lineSpacing(3);closeMenus()">Line spacing 3.0</button>
+   </div>
+  </div>
+
+  <!-- File Menu -->
+  <div class="menu">
+   <button onclick="toggleMenu('fileMenu',event)">File ▾</button>
+   <div id="fileMenu" class="dropdown">
+    <button onclick="newDoc();closeMenus()">📄 নতুন</button>
+    <button onclick="window.print();closeMenus()">🖨️ প্রিন্ট / PDF</button>
+    <button onclick="downloadWord();closeMenus()">📝 Word ডাউনলোড</button>
+    <button onclick="loadDoc();closeMenus()">📂 সংরক্ষিত লেখা</button>
+   </div>
+  </div>
+
+  <!-- Page Menu -->
+  <div class="menu">
+   <button onclick="toggleMenu('pageMenu',event)">Page ▾</button>
    <div id="pageMenu" class="dropdown">
     <button onclick="pageSize('A4');closeMenus()">A4 — 210 × 297 mm</button>
     <button onclick="pageSize('A5');closeMenus()">A5 — 148 × 210 mm</button>
@@ -117,64 +194,9 @@ button,select,input{font:inherit}
     <button onclick="margin('25mm');closeMenus()">মার্জিন 25 mm</button>
    </div>
   </div>
-  <div class="menu">
-   <button onclick="openMenu('insertMenu',event,this)">Insert</button>
-   <div id="insertMenu" class="dropdown">
-    <button onclick="makeTable();closeMenus()">📋 ইচ্ছামতো টেবিল</button>
-    <button onclick="addRow();closeMenus()">➕ Row যোগ</button>
-    <button onclick="addCol();closeMenus()">➕ Column যোগ</button>
-    <button onclick="delRow();closeMenus()">➖ Row মুছুন</button>
-    <button onclick="delCol();closeMenus()">➖ Column মুছুন</button>
-    <button onclick="pageBreak();closeMenus()">📄 Page Break</button>
-    <button onclick="insertDate();closeMenus()">📅 আজকের তারিখ</button>
-   </div>
-  </div>
-  <div class="menu">
-   <button onclick="openMenu('formatMenu',event,this)">Format</button>
-   <div id="formatMenu" class="dropdown">
-    <button onclick="lineSpacing(.5);closeMenus()">Line spacing 0.5</button>
-    <button onclick="lineSpacing(.75);closeMenus()">Line spacing 0.75</button>
-    <button onclick="lineSpacing(1);closeMenus()">Line spacing 1.0</button>
-    <button onclick="lineSpacing(1.15);closeMenus()">Line spacing 1.15</button>
-    <button onclick="lineSpacing(1.5);closeMenus()">Line spacing 1.5</button>
-    <button onclick="lineSpacing(2);closeMenus()">Line spacing 2.0</button>
-    <button onclick="lineSpacing(2.5);closeMenus()">Line spacing 2.5</button>
-    <button onclick="lineSpacing(3);closeMenus()">Line spacing 3.0</button>
-   </div>
-  </div>
- </div>
- <div class="toolbar">
-  <select id="font" onchange="font(this.value)">
-   <option value="Arial">Arial</option>
-   <option value="Times New Roman">Times New Roman</option>
-   <option value="Georgia">Georgia</option>
-   <option value="Verdana">Verdana</option>
-   <option value="Tahoma">Tahoma</option>
-   <option value="'Hind Siliguri'">Hind Siliguri</option>
-   <option value="'Noto Sans Bengali'">Noto Sans Bengali</option>
-   <option value="'Noto Serif Bengali'">Noto Serif Bengali</option>
-   <option value="SolaimanLipi">SolaimanLipi</option>
-   <option value="serif">Serif</option>
-   <option value="sans-serif">Sans Serif</option>
-  </select>
-  <button onclick="fontSize(-1)">−</button>
-  <select id="size" onchange="setSize(this.value)">
-   <option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
-   <option>13</option><option>14</option><option>15</option><option selected>16</option>
-   <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option>
-   <option>22</option><option>23</option><option>24</option><option>25</option><option>26</option>
-   <option>27</option><option>28</option><option>29</option><option>30</option><option>32</option>
-   <option>36</option><option>40</option><option>48</option><option>60</option><option>72</option>
-  </select>
-  <button onclick="fontSize(1)">+</button><span class="sep"></span>
-  <button onclick="cmd('bold')"><b>B</b></button>
-  <button onclick="cmd('italic')"><i>I</i></button>
-  <button onclick="cmd('underline')"><u>U</u></button>
-  <button onclick="cmd('justifyLeft')">≡ বামে</button>
-  <button onclick="cmd('justifyCenter')">≡ মাঝে</button>
-  <button onclick="cmd('justifyRight')">≡ ডানে</button>
-  <button onclick="cmd('justifyFull')">☰ সমান</button>
-  <button onclick="makeTable()">📋 টেবিল</button>
+
+  <span class="sep"></span>
+  <button onclick="saveDoc()" style="background:#1a73e8;color:#fff;font-weight:600;">Save</button>
  </div>
 </div>
 
@@ -185,35 +207,83 @@ button,select,input{font:inherit}
 
 <script>
 const paper=document.getElementById('paper');
-let savedRange=null;
+let lastRange=null;
 
-function remember(){
- const s=getSelection();
- if(s.rangeCount && paper.contains(s.anchorNode)) savedRange=s.getRangeAt(0).cloneRange();
+function saveSelection(){
+ const sel = window.getSelection();
+ if(sel.rangeCount > 0 && paper.contains(sel.anchorNode)){
+  lastRange = sel.getRangeAt(0);
+ }
 }
-['mouseup','keyup','touchend','selectionchange'].forEach(e=>document.addEventListener(e,()=>setTimeout(remember,0)));
 
-function restore(){
- if(!savedRange)return;
- const s=getSelection();s.removeAllRanges();s.addRange(savedRange);
+['selectionchange', 'mouseup', 'keyup', 'touchend'].forEach(evt => {
+ document.addEventListener(evt, () => {
+  setTimeout(saveSelection, 10);
+ });
+});
+
+function restoreSelection(){
+ if(lastRange){
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.selRange = lastRange;
+  try {
+   sel.addRange(lastRange);
+  } catch(e){
+   // ফেইল করলে পেপারের শেষে ফোকাস যাবে
+   paper.focus();
+  }
+ } else {
+  paper.focus();
+ }
 }
-function cmd(c){
- restore();paper.focus();document.execCommand(c,false,null);remember();
+
+function applyStyle(cmd, val = null){
+ paper.focus();
+ restoreSelection();
+ document.execCommand(cmd, false, val);
+ saveSelection();
 }
-function font(v){restore();paper.focus();document.execCommand('fontName',false,v);remember()}
-function setSize(v){
- restore();paper.focus();document.execCommand('fontSize',false,'7');
- paper.querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute('size');x.style.fontSize=v+'px'});
- remember()
+
+// একদম নিখুঁত ফন্ট সাইজ হ্যান্ডেলার যা টেনশন ফ্রি কাজ করবে
+function applyFontSize(sizeVal){
+ paper.focus();
+ restoreSelection();
+ 
+ const sel = window.getSelection();
+ if(!sel.rangeCount) return;
+ const range = sel.getRangeAt(0);
+
+ if(range.collapsed){
+  // কার্সর থাকলে নতুন স্প্যান ট্যাগ ইনসার্ট হবে যাতে সামনের লেখা ওই সাইজে হয়
+  const span = document.createElement('span');
+  span.style.fontSize = sizeVal + 'px';
+  span.innerHTML = '&#8203;';
+  range.insertNode(span);
+  range.setStart(span, 0);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+ } else {
+  // লেখা সিলেক্ট করা থাকলে সরাসরি সাইজ র‍্যাপ হয়ে যাবে
+  const span = document.createElement('span');
+  span.style.fontSize = sizeVal + 'px';
+  span.appendChild(range.extractContents());
+  range.insertNode(span);
+  sel.removeAllRanges();
+  const newRange = document.createRange();
+  newRange.selectNodeContents(span);
+  sel.addRange(newRange);
+ }
+ saveSelection();
+ toast('ফন্ট সাইজ: ' + sizeVal + 'px');
 }
-function fontSize(step){
- let n=parseInt(document.getElementById('size').value,10)+step;
- n=Math.max(8,Math.min(72,n));document.getElementById('size').value=n;setSize(n)
-}
+
 function lineSpacing(v){
  document.documentElement.style.setProperty('--lh',v);
  toast('Line spacing '+v)
 }
+
 const paperSizes={
  A4:['210mm','297mm'],A5:['148mm','210mm'],
  Letter:['216mm','279mm'],Legal:['216mm','356mm']
@@ -226,39 +296,49 @@ function pageSize(name){
  if(currentOrientation==='landscape')[w,h]=[h,w];
  document.documentElement.style.setProperty('--pw',w);
  document.documentElement.style.setProperty('--ph',h);
- toast(name+' page size স্থির হয়েছে')
+ toast(name+' পেজ সাইজ সেট হয়েছে')
 }
+
 function orientation(o){
  currentOrientation=o;
  pageSize(currentSize);
- toast(o==='portrait'?'Portrait স্থির হয়েছে':'Landscape স্থির হয়েছে')
+ toast(o==='portrait'?'Portrait মোড':'Landscape মোড')
 }
-function margin(v){document.documentElement.style.setProperty('--margin',v);toast('Margin '+v)}
 
-function openMenu(id,e,btn){
- e.stopPropagation();
- closeMenus();
- const d=document.getElementById(id);
- d.classList.add('show');
- const r=btn.getBoundingClientRect();
- d.style.top=(r.bottom+4)+'px';
- d.style.left=Math.max(8, Math.min(r.left, window.innerWidth - 230))+'px';
+function margin(v){
+ document.documentElement.style.setProperty('--margin',v);
+ toast('মার্জিন '+v)
 }
-function closeMenus(){document.querySelectorAll('.dropdown').forEach(x=>x.classList.remove('show'))}
+
+function toggleMenu(id,e){
+ e.stopPropagation();
+ const dropdown=document.getElementById(id);
+ const isOpen=dropdown.classList.contains('show');
+ closeMenus();
+ if(!isOpen){dropdown.classList.add('show')}
+}
+
+function closeMenus(){
+ document.querySelectorAll('.dropdown').forEach(x=>x.classList.remove('show'))
+}
+
 document.addEventListener('click',e=>{if(!e.target.closest('.menu'))closeMenus()});
 
 function tableAtCursor(){
- restore();let n=getSelection().anchorNode;
- if(n&&n.nodeType===3)n=n.parentElement;
- return n?.closest?.('table')||null
+ restoreSelection();
+ let n = window.getSelection().anchorNode;
+ if(n && n.nodeType === 3) n = n.parentElement;
+ return n?.closest?.('table') || null;
 }
+
 function makeTable(){
  let r=parseInt(prompt('কতটি Row চান?','5'),10);
  if(!r)return;
  let c=parseInt(prompt('কতটি Column চান?','4'),10);
  if(!c)return;
- r=Math.min(50,Math.max(1,r));c=Math.min(20,Math.max(1,c));
- restore();paper.focus();
+ r=Math.min(50,Math.max(1,r)); c=Math.min(20,Math.max(1,c));
+ paper.focus();
+ restoreSelection();
  let h='<table><tbody>';
  for(let i=0;i<r;i++){
   h+='<tr>';
@@ -266,56 +346,83 @@ function makeTable(){
   h+='</tr>'
  }
  h+='</tbody></table><p><br></p>';
- document.execCommand('insertHTML',false,h);remember();toast(r+' × '+c+' টেবিল তৈরি হয়েছে')
+ document.execCommand('insertHTML',false,h);
+ saveSelection();
+ toast('টেবিল তৈরি হয়েছে');
 }
+
 function addRow(){
  const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
  const r=t.insertRow(-1);
  for(let i=0;i<t.rows[0].cells.length;i++)r.insertCell(-1).innerHTML='<br>';
 }
+
 function addCol(){
  const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
  for(let i=0;i<t.rows.length;i++)t.rows[i].insertCell(-1).innerHTML=i===0?'শিরোনাম':'<br>';
 }
+
 function delRow(){
  const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
  if(t.rows.length>1)t.deleteRow(-1)
 }
+
 function delCol(){
  const t=tableAtCursor();if(!t){alert('টেবিলের একটি ঘরে কার্সর রাখুন।');return}
  if(t.rows[0].cells.length>1)for(const r of t.rows)r.deleteCell(-1)
 }
+
 function pageBreak(){
- restore();paper.focus();document.execCommand('insertHTML',false,'<div style="page-break-before:always"></div><p><br></p>')
+ paper.focus();
+ restoreSelection();
+ document.execCommand('insertHTML',false,'<div style="page-break-before:always"></div><p><br></p>');
+ saveSelection();
 }
+
 function insertDate(){
- restore();paper.focus();
- const d=new Date();const x=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
- document.execCommand('insertText',false,x)
+ paper.focus();
+ restoreSelection();
+ const d=new Date();
+ const x=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+ document.execCommand('insertText',false,x);
+ saveSelection();
 }
+
 function newDoc(){
  if(!confirm('নতুন খালি রিপোর্ট শুরু করবেন?'))return;
- paper.html='<p><br></p>';paper.innerHTML='<p><br></p>';document.getElementById('docTitle').value='নামহীন অফিস রিপোর্ট'
+ paper.innerHTML='<p><br></p>';
+ document.getElementById('docTitle').value='নামহীন অফিস রিপোর্ট';
 }
+
 function saveDoc(){
  localStorage.setItem('office_report_html',paper.innerHTML);
  localStorage.setItem('office_report_title',document.getElementById('docTitle').value);
- toast('রিপোর্ট সংরক্ষণ হয়েছে')
+ toast('রিপোর্ট সফলভাবে সংরক্ষিত হয়েছে!');
 }
+
 function loadDoc(){
  const h=localStorage.getItem('office_report_html');
  if(!h){alert('কোনো সংরক্ষিত রিপোর্ট নেই।');return}
  paper.innerHTML=h;
- const t=localStorage.getItem('office_report_title');if(t)document.getElementById('docTitle').value=t;
- toast('রিপোর্ট আনা হয়েছে')
+ const t=localStorage.getItem('office_report_title');
+ if(t) document.getElementById('docTitle').value=t;
+ toast('সংরক্ষিত লেখা লোড হয়েছে');
 }
+
 function downloadWord(){
  const name=(document.getElementById('docTitle').value||'অফিস-রিপোর্ট').replace(/[\\/:*?"<>|]/g,'_');
  const html='<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}td,th{border:1px solid #000;padding:5px}</style></head><body>'+paper.innerHTML+'</body></html>';
  const a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff',html],{type:'application/msword'}));
  a.href=u;a.download=name+'.doc';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)
 }
-function toast(t){const s=document.getElementById('status');s.textContent=t;s.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>s.classList.remove('show'),1600)}
+
+function toast(t){
+ const s=document.getElementById('status');
+ s.textContent=t;
+ s.classList.add('show');
+ clearTimeout(window.tt);
+ window.tt=setTimeout(()=>s.classList.remove('show'),1600);
+}
 
 document.getElementById('docTitle').addEventListener('input',e=>document.title=e.target.value);
 pageSize('A4');
